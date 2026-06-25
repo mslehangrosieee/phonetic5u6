@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Lê Hằng English - Mint Green Practice Suite</title>
+    <!-- Tailwind CSS For Dynamic UI Components -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Nhúng Font chữ: Fredoka (Bubble) & Oswald (Poster) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --theme-gradient: linear-gradient(-45deg, #f0fdf4, #dcfce7, #f0fdf4, #bbf7d0);
+            --theme-accent: #15803d;
+            --theme-accent-dark: #166534;
+            --theme-blob-1: rgba(34, 197, 94, 0.15);
+            --theme-blob-2: rgba(20, 184, 166, 0.12);
+            --theme-text: #14532d;
+            --theme-border: #4ade80;
+            --theme-border-dark: #166534;
+            --theme-accent-light: #f0fdf4;
+            --theme-shadow: rgba(21, 128, 61, 0.15);
+        }
+
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: var(--theme-gradient);
+            background-size: 400% 400%;
+            animation: gradientAnimation 12s ease-in-out infinite;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 1s ease;
+        }
+
+        /* Định nghĩa các lớp Font chữ chuyên biệt */
+        .font-bubble {
+            font-family: 'Fredoka', sans-serif;
+        }
+        
+        .font-poster {
+            font-family: 'Oswald', sans-serif;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ambient Fluid Glow Blobs */
+        .blob-glow-1 {
+            position: fixed; top: 5%; left: -12%; width: 550px; height: 550px;
+            background: radial-gradient(circle, var(--theme-blob-1) 0%, rgba(255,255,255,0) 70%);
+            filter: blur(50px); z-index: -1; animation: floatBlob 10s ease-in-out infinite alternate;
+        }
+        .blob-glow-2 {
+            position: fixed; bottom: 5%; right: -12%; width: 650px; height: 650px;
+            background: radial-gradient(circle, var(--theme-blob-2) 0%, rgba(255,255,255,0) 70%);
+            filter: blur(60px); z-index: -1; animation: floatBlob 14s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            100% { transform: translate(40px, 30px) scale(1.1); }
+        }
+
+        #particles-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Sparkle trail overlay */
+        #sparkle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 99;
+        }
+
+        /* Card chứa nội dung tăng độ tương phản rõ rệt */
+        .premium-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 4px solid var(--theme-border);
+            box-shadow: 0 20px 40px var(--theme-shadow);
+        }
+
+        /* Cảm giác haptic cực nhạy & "đã tay" khi bấm */
+        .option-card {
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-color: var(--theme-border);
+        }
+        .option-card:hover {
+            border-color: var(--theme-border-dark);
+            background-color: var(--theme-accent-light);
+            box-shadow: 0 8px 16px var(--theme-shadow);
+            transform: translateY(-2px);
+        }
+
+        /* CSS Animation cho Mascot Cú Con hoạt hình */
+        @keyframes owlBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
+        @keyframes owlShake {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
+        .animate-owl-bounce {
+            animation: owlBounce 0.5s ease infinite;
+        }
+        .animate-owl-shake {
+            animation: owlShake 0.4s ease 2;
+        }
+    </style>
+</head>
+<body class="text-slate-950 antialiased pb-28 relative tracking-wide select-none">
+
+    <canvas id="particles-canvas"></canvas>
+    <canvas id="sparkle-canvas"></canvas>
+
+    <div class="blob-glow-1"></div>
+    <div class="blob-glow-2"></div>
+
+    <!-- Mascot Trợ lý Đáng Yêu ở Góc Màn Hình (Owl Helper) -->
+    <div class="fixed bottom-24 right-6 z-40 flex flex-col items-end pointer-events-none md:pointer-events-auto">
+        <div id="mascot-bubble" class="font-bubble bg-white text-slate-900 font-semibold text-xs md:text-sm px-4 py-3 rounded-2xl shadow-xl border-2 border-emerald-400 max-w-[180px] text-center mb-2 animate-bounce relative">
+            Chào con yêu! Cùng làm bài với Cô Hằng nhé! ✨
+            <div class="absolute right-6 -bottom-2 w-3 h-3 bg-white border-r-2 border-b-2 border-emerald-400 rotate-45"></div>
+        </div>
+        <div id="mascot-character" class="text-6xl md:text-7xl cursor-pointer select-none transform transition-transform hover:scale-110 active:scale-95 duration-200 pointer-events-auto" onclick="clickMascot()">
+            🦉
+        </div>
+    </div>
+
+    <!-- Brand Header Area -->
+    <header class="max-w-5xl w-full mx-auto pt-10 px-4 flex flex-col items-center relative z-10">
+        <div class="font-poster flex items-center gap-2.5 px-6 py-3 rounded-full text-white font-black text-xs md:text-sm tracking-wider uppercase shadow-2xl transform hover:scale-105 transition-all duration-300" style="background: var(--theme-accent)">
+            <span>✨ LỚP HỌC TIẾNG ANH CHẤT LƯỢNG CAO - MS. LÊ HẰNG ENGLISH ✨</span>
+        </div>
+    </header>
+
+    <!-- Top Notice Alert Banner Box -->
+    <section class="max-w-5xl w-full mx-auto px-4 mt-6 relative z-10">
+        <div class="bg-emerald-950 border-4 border-emerald-400 rounded-3xl p-6 text-center text-xs md:text-sm text-emerald-100 font-medium shadow-2xl leading-relaxed relative overflow-hidden">
+            <span class="font-bubble font-bold text-xl md:text-2xl block mb-2 text-white tracking-normal">⚠️ LỜI NHẮC TỪ CÔ LÊ HẰNG ⚠️</span>
+            <p class="font-poster text-sm md:text-base tracking-wide text-slate-150">
+                Hãy chú ý phân biệt kỹ các quy tắc phát âm nguyên âm và vị trí trọng âm (Stress) của từ có 2 và 3 âm tiết con nhé. Đọc thầm từ đó lên trước khi chọn đáp án!
+            </p>
+            <span class="font-poster text-emerald-350 text-xs font-black block mt-3 animate-pulse tracking-widest uppercase text-emerald-400">👇 CHẠM NHANH VÀO ĐÁP ÁN DƯỚI ĐÂY NHA 👇</span>
+        </div>
+    </section>
+
+    <!-- Navigation Switcher System -->
+    <nav class="max-w-5xl w-full mx-auto px-4 mt-6 relative z-10">
+        <div class="font-poster grid grid-cols-2 gap-4 p-2 bg-emerald-950 rounded-2xl border-4 border-white shadow-xl">
+            <button onclick="changeSectionTab('ex1')" id="tab-ex1" class="py-3.5 text-xs md:text-base font-bold rounded-xl text-center option-card active:scale-[0.95] text-white shadow-md" style="background: var(--theme-accent)">
+                🎯 EXERCISE 1 (PRONUNCIATION)
+            </button>
+            <button onclick="changeSectionTab('ex2')" id="tab-ex2" class="py-3.5 text-xs md:text-base font-bold rounded-xl text-center option-card active:scale-[0.95] text-slate-300 hover:text-white hover:bg-white/10">
+                ⚡ EXERCISE 2 (WORD STRESS)
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Dynamic Feed Window -->
+    <main class="max-w-5xl w-full mx-auto px-4 mt-6 relative z-10">
+        <div class="premium-card rounded-3xl p-6 md:p-10 shadow-2xl">
+            
+            <div class="mb-6 flex items-start gap-4">
+                <span id="header-icon" class="text-2xl p-2 bg-emerald-100 rounded-xl text-emerald-600 border-2 border-emerald-300 shadow-sm shrink-0">🗣️</span>
+                <h2 id="exercise-main-title" class="font-bubble text-slate-900 font-bold text-base md:text-xl leading-relaxed pt-1">
+                    Exercise 1: Mark the letter A, B, C, or D to indicate the word whose underlined part differs from the other three in pronunciation in each of the following questions.
+                </h2>
+            </div>
+            
+            <div class="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-500 mb-8 rounded-full"></div>
+
+            <div id="quiz-feed-wrapper" class="space-y-10">
+                <!-- Data Rendered by JS -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Fixed Sticky Dynamic Scorebar -->
+    <div class="font-poster fixed bottom-0 left-0 right-0 bg-emerald-950 border-t-4 border-emerald-400 py-4 px-6 flex justify-between items-center shadow-2xl z-50">
+        <div class="text-white font-bold text-sm md:text-base flex items-center gap-2 bg-emerald-900 px-5 py-2 rounded-xl border border-emerald-800 shadow-inner">
+            🥇 <span class="text-slate-400">ĐIỂM CỦA CON:</span> <span id="footer-live-score" class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400 ml-1">0</span>
+        </div>
+        <button onclick="alertFinishMessage()" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 active:scale-95 text-white font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 shadow-lg shadow-green-900/40 transition-all text-xs md:text-base uppercase tracking-wider">
+            Nộp Bài Cho Cô Hằng 🚀
+        </button>
+    </div>
+
+    <script>
+        // --- 1. MINT GREEN THEME STYLING CONFIGURATION ---
+        const activeTheme = {
+            gradient: 'linear-gradient(-45deg, #f0fdf4, #dcfce7, #f0fdf4, #bbf7d0)',
+            accent: '#15803d',
+            accentDark: '#166534',
+            blob1: 'rgba(34, 197, 94, 0.15)',
+            blob2: 'rgba(20, 184, 166, 0.12)',
+            text: '#14532d',
+            border: '#4ade80',
+            borderDark: '#166534',
+            accentLight: '#f0fdf4',
+            shadow: 'rgba(21, 128, 61, 0.15)',
+            particleColors: ['#22c55e', '#10b981', '#14b8a6', '#86efac']
+        };
+
+        function updateTabStyles() {
+            const tab1 = document.getElementById('tab-ex1');
+            const tab2 = document.getElementById('tab-ex2');
+            if (currentActiveSection === 'ex1') {
+                tab1.style.background = activeTheme.accent;
+                tab2.style.background = 'transparent';
+            } else {
+                tab2.style.background = activeTheme.accent;
+                tab1.style.background = 'transparent';
+            }
+        }
+
+        // --- 2. KID-FRIENDLY INTERACTIVE MASCOT MESSAGES ---
+        const mascotGreetings = [
+            "Chào bạn nhỏ nhé! Con đã sẵn sàng bứt phá chưa? 🚀",
+            "Cố gắng lên nào con, Cô Hằng tin con làm được! ❤️",
+            "Mỗi câu trả lời đúng là một ngôi sao nhỏ lấp lánh đó nha! ⭐",
+            "Con làm bài thật cẩn thận để đạt điểm tuyệt đối nhé! 🥇"
+        ];
+        const mascotSuccess = [
+            "🎉 Ôi! Con xuất sắc quá đi mất!",
+            "🤩 Đỉnh của chóp! Chính xác rồi con ơi!",
+            "⭐️ Siêu phàm! Trả lời siêu quá con!",
+            "🔥 Quá tuyệt vời! Đúng hoàn toàn luôn con yêu!"
+        ];
+        const mascotEncourage = [
+            "💪 Không sao cả con yêu! Thử lại câu tiếp theo nha!",
+            "🥰 Nhầm một xíu thôi nè, đọc kỹ lại phiên âm con nhé!",
+            "🚀 Thất bại là mẹ thành công! Tiến lên phía trước nào!",
+            "🌻 Cố lên con, Cô Hằng luôn đồng hành bên con!"
+        ];
+
+        function changeMascotReaction(type) {
+            const bubble = document.getElementById('mascot-bubble');
+            const character = document.getElementById('mascot-character');
+            
+            character.className = "text-6xl md:text-7xl cursor-pointer select-none transform transition-transform hover:scale-110 active:scale-95 duration-200 pointer-events-auto";
+
+            let pool = mascotGreetings;
+            if (type === 'success') {
+                pool = mascotSuccess;
+                character.innerHTML = "🦉";
+                character.classList.add('animate-owl-bounce');
+                setTimeout(() => character.classList.remove('animate-owl-bounce'), 1500);
+            } else if (type === 'encourage') {
+                pool = mascotEncourage;
+                character.innerHTML = "🦉";
+                character.classList.add('animate-owl-shake');
+                setTimeout(() => character.classList.remove('animate-owl-shake'), 1000);
+            }
+
+            bubble.innerHTML = pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function clickMascot() {
+            changeMascotReaction('greet');
+            playSoundNotification(true);
+            triggerConfettiExplosion(window.innerWidth - 100, window.innerHeight - 150);
+        }
+
+        // --- 3. DYNAMIC SPARKLES & CONFETTI CANVAS ---
+        const sparkleCanvas = document.getElementById('sparkle-canvas');
+        const sCtx = sparkleCanvas.getContext('2d');
+        let sparkleArray = [];
+
+        function resizeSparkleCanvas() {
+            sparkleCanvas.width = window.innerWidth;
+            sparkleCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeSparkleCanvas);
+        resizeSparkleCanvas();
+
+        class StarConfetti {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 15 + 10;
+                this.speedX = (Math.random() - 0.5) * 12;
+                this.speedY = (Math.random() - 0.5) * 12 - 5;
+                this.gravity = 0.25;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 10;
+                this.opacity = 1;
+                this.fade = Math.random() * 0.015 + 0.01;
+                const colors = ['#22c55e', '#10b981', '#a855f7', '#ffb703', '#4ade80'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.emoji = ['★', '✨', '🌸', '🎈', '🍭'][Math.floor(Math.random() * 5)];
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.speedY += this.gravity;
+                this.rotation += this.rotationSpeed;
+                this.opacity -= this.fade;
+            }
+            draw() {
+                sCtx.save();
+                sCtx.globalAlpha = this.opacity;
+                sCtx.translate(this.x, this.y);
+                sCtx.rotate(this.rotation * Math.PI / 180);
+                sCtx.font = `${this.size}px Arial`;
+                sCtx.fillStyle = this.color;
+                sCtx.fillText(this.emoji, -this.size / 2, this.size / 2);
+                sCtx.restore();
+            }
+        }
+
+        function triggerConfettiExplosion(x, y) {
+            for (let i = 0; i < 40; i++) {
+                sparkleArray.push(new StarConfetti(x, y));
+            }
+        }
+
+        // Sparkle touch trail effect
+        window.addEventListener('mousemove', (e) => {
+            if (Math.random() < 0.15) {
+                sparkleArray.push(new StarConfetti(e.clientX, e.clientY));
+            }
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (Math.random() < 0.25) {
+                const touch = e.touches[0];
+                sparkleArray.push(new StarConfetti(touch.clientX, touch.clientY));
+            }
+        });
+
+        function animateSparkles() {
+            sCtx.clearRect(0, 0, sparkleCanvas.width, sparkleCanvas.height);
+            for (let i = sparkleArray.length - 1; i >= 0; i--) {
+                sparkleArray[i].update();
+                if (sparkleArray[i].opacity <= 0) {
+                    sparkleArray.splice(i, 1);
+                } else {
+                    sparkleArray[i].draw();
+                }
+            }
+            requestAnimationFrame(animateSparkles);
+        }
+        animateSparkles();
+
+        // --- 4. HTML5 Background Particles Canvas ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        const shapesPool = ['★', '✨', '🍀'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class BackgroundParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 12 + 10;
+                this.speedY = Math.random() * 0.4 + 0.2;
+                this.speedX = Math.sin(Math.random() * 2) * 0.15;
+                this.char = shapesPool[Math.floor(Math.random() * shapesPool.length)];
+                this.opacity = Math.random() * 0.25 + 0.15;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) {
+                    this.y = canvas.height + 20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `bold ${this.size}px Arial`;
+                ctx.fillStyle = activeTheme.particleColors[Math.floor(Math.random() * activeTheme.particleColors.length)];
+                ctx.fillText(this.char, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < 18; i++) {
+                particlesArray.push(new BackgroundParticle());
+            }
+        }
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles();
+        animateParticles();
+
+        // --- 5. Pure Synthesized Playful Sounds ---
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        function playSoundNotification(success) {
+            if (!audioContext) return;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain); gain.connect(audioContext.destination);
+            
+            if (success) {
+                // Sparkling upward arpeggio for children's success
+                osc.type = 'triangle';
+                const now = audioContext.currentTime;
+                osc.frequency.setValueAtTime(261.63, now); // C4
+                osc.frequency.setValueAtTime(329.63, now + 0.08); // E4
+                osc.frequency.setValueAtTime(392.00, now + 0.16); // G4
+                osc.frequency.setValueAtTime(523.25, now + 0.24); // C5
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+                osc.start(); osc.stop(now + 0.45);
+            } else {
+                // Gentle cartoon 'boing' sliding down for encouragement
+                osc.type = 'sine';
+                const now = audioContext.currentTime;
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(110, now + 0.35);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(); osc.stop(now + 0.35);
+            }
+        }
+
+        // --- 6. EXCLUSIVE 30-QUESTION DATABASE ---
+        const exerciseData = {
+            ex1: [
+                { id: 1, label: "1", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "film", B: "city", C: "historic", D: "nice" }, answer: "D", exp: "👉 Chữ 'i' trong <strong>nice</strong> phát âm là <strong>/aɪ/</strong> (/naɪs/).<br>👉 Các từ còn lại phát âm là <strong>/ɪ/</strong>: <em>film</em> (/fɪlm/), <em>city</em> (/ˈsɪti/), <em>historic</em> (/hɪˈstɒrɪk/)." },
+                { id: 2, label: "2", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "exciting", B: "inside", C: "finally", D: "first" }, answer: "D", exp: "👉 Chữ 'i' trong <strong>first</strong> kết hợp với 'r' phát âm là <strong>/ɜː/</strong> (/fɜːst/).<br>👉 Các từ còn lại chữ 'i' phát âm là <strong>/aɪ/</strong>: <em>exciting</em> (/ɪkˈsaɪtɪŋ/), <em>inside</em> (/ˌɪnˈsaɪd/), <em>finally</em> (/ˈfaɪnəli/)." },
+                { id: 3, label: "3", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "convenient", B: "exciting", C: "expensive", D: "explain" }, answer: "A", exp: "👉 Chữ 'e' trong <strong>convenient</strong> phát âm là <strong>/iː/</strong> (/kənˈviːniənt/).<br>👉 Các từ còn lại nằm ở tiền tố 'ex-', âm 'e' phát âm là <strong>/ɪ/</strong>: <em>exciting</em> (/ɪkˈsaɪtɪŋ/), <em>expensive</em> (/ɪkˈspensɪv/), <em>explain</em> (/ɪkˈspleɪn/)." },
+                { id: 4, label: "4", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "cheap", B: "sleepy", C: "near", D: "peaceful" }, answer: "C", exp: "👉 Tổ hợp 'ea' trong <strong>near</strong> phát âm là <strong>/ɪə/</strong> (/nɪər/).<br>👉 Các từ còn lại phát âm là <strong>/iː/</strong>: <em>cheap</em> (/tʃiːp/), <em>sleepy</em> (/ˈsliːpi/), <em>peaceful</em> (/ˈpiːsfl/)." },
+                { id: 5, label: "5", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "big", B: "wide", C: "quiet", D: "exciting" }, answer: "A", exp: "👉 Chữ 'i' trong <strong>big</strong> phát âm là <strong>/ɪ/</strong> (/bɪɡ/).<br>👉 Các từ còn lại phát âm là <strong>/aɪ/</strong>: <em>wide</em> (/waɪd/), <em>quiet</em> (/ˈkwaɪət/), <em>exciting</em> (chữ i thứ nhất /ɪkˈsaɪtɪŋ/)." },
+                { id: 6, label: "6", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "heavy", B: "cheap", C: "tea", D: "sea" }, answer: "A", exp: "👉 Tổ hợp 'ea' trong <strong>heavy</strong> phát âm là <strong>/e/</strong> (/ˈhevi/).<br>👉 Các từ còn lại phát âm là <strong>/iː/</strong>: <em>cheap</em> (/tʃiːp/), <em>tea</em> (/tiː/), <em>sea</em> (/siː/)." },
+                { id: 7, label: "7", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "lively", B: "city", C: "village", D: "delicious" }, answer: "A", exp: "👉 Chữ 'i' trong <strong>lively</strong> phát âm là <strong>/aɪ/</strong> (/ˈlaɪvli/).<br>👉 Các từ còn lại phát âm là <strong>/ɪ/</strong>: <em>city</em> (/ˈsɪti/), <em>village</em> (/ˈvɪlɪdʒ/), <em>delicious</em> (/dɪˈlɪʃəs/)." },
+                { id: 8, label: "8", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "cheap", B: "pear", C: "clean", D: "peaceful" }, answer: "B", exp: "👉 Tổ hợp 'ea' trong <strong>pear</strong> phát âm là <strong>/eə/</strong> (/peər/).<br>👉 Các từ còn lại phát âm là <strong>/iː/</strong>: <em>cheap</em> (/tʃiːp/), <em>clean</em> (/kliːn/), <em>peaceful</em> (/ˈpiːsfl/)." },
+                { id: 9, label: "9", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "pizza", B: "dinner", C: "city", D: "with" }, answer: "A", exp: "👉 Từ mượn <strong>pizza</strong> có chữ 'i' phát âm đặc biệt là <strong>/iː/</strong> (/ˈpiːtsə/).<br>👉 Các từ còn lại phát âm là <strong>/ɪ/</strong>: <em>dinner</em> (/ˈdɪnər/), <em>city</em> (/ˈsɪti/), <em>with</em> (/wɪð/)." },
+                { id: 10, label: "10", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "evening", B: "enough", C: "live", D: "English" }, answer: "A", exp: "👉 Chữ 'e' trong <strong>evening</strong> phát âm là <strong>/iː/</strong> (/ˈiːvnɪŋ/).<br>👉 Chữ 'e' ở đầu các từ còn lại đều phát âm là <strong>/ɪ/</strong>: <em>enough</em> (/ɪˈnʌf/), <em>English</em> (/ˈɪŋɡlɪʃ/) (chữ i trong 'live' cũng là /ɪ/)." },
+                { id: 11, label: "11", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "hill", B: "ship", C: "kite", D: "chip" }, answer: "C", exp: "👉 Chữ 'i' trong <strong>kite</strong> phát âm là <strong>/aɪ/</strong> (/kaɪt/).<br>👉 Các từ còn lại phát âm là <strong>/ɪ/</strong>: <em>hill</em> (/hɪl/), <em>ship</em> (/ʃɪp/), <em>chip</em> (/tʃɪp/)." },
+                { id: 12, label: "12", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "cheap", B: "great", C: "peace", D: "meal" }, answer: "B", exp: "👉 Tổ hợp 'ea' trong <strong>great</strong> phát âm đặc biệt là <strong>/eɪ/</strong> (/ɡreɪt/).<br>👉 Các từ còn lại phát âm là <strong>/iː/</strong>: <em>cheap</em> (/tʃiːp/), <em>peace</em> (/piːs/), <em>meal</em> (/miːl/)." },
+                { id: 13, label: "13", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "evening", B: "extreme", C: "scene", D: "excite" }, answer: "D", exp: "👉 Chữ 'e' ở đầu từ <strong>excite</strong> phát âm là <strong>/ɪ/</strong> (/ɪkˈsaɪt/).<br>👉 Các từ còn lại chữ 'e' nhấn mạnh phát âm là <strong>/iː/</strong>: <em>evening</em> (/ˈiːvnɪŋ/), <em>extreme</em> (/ɪkˈstriːm/), <em>scene</em> (/siːn/)." },
+                { id: 14, label: "14", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "garage", B: "village", C: "message", D: "shortage" }, answer: "A", exp: "👉 Đuôi -age trong từ <strong>garage</strong> phát âm là <strong>/ɑːʒ/</strong> hoặc <strong>/ɑːdʒ/</strong> (/ˈɡærɑːʒ/).<br>👉 Các từ còn lại đuôi -age phát âm là <strong>/ɪdʒ/</strong>: <em>village</em> (/ˈvɪlɪdʒ/), <em>message</em> (/ˈmesɪdʒ/), <em>shortage</em> (/ˈʃɔːtɪdʒ/)." },
+                { id: 15, label: "15", text: "Chọn từ có phần gạch chân phát âm khác biệt:", options: { A: "field", B: "niece", C: "quiet", D: "piece" }, answer: "C", exp: "👉 Tổ hợp 'ie' trong <strong>quiet</strong> phát âm tách rời thành <strong>/aɪə/</strong> (/ˈkwaɪət/).<br>👉 Các từ còn lại 'ie' phát âm là âm dài <strong>/iː/</strong>: <em>field</em> (/fiːld/), <em>niece</em> (/niːs/), <em>piece</em> (/piːs/)." }
+            ],
+            ex2: [
+                { id: 1, label: "1", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "boring", B: "polite", C: "statue", D: "temple" }, answer: "B", exp: "👉 Tính từ <strong>polite</strong> có trọng âm rơi vào âm tiết thứ 2 (/pəˈlaɪt/).<br>👉 Các từ còn lại nhấn âm tiết thứ 1: <em>boring</em> (/ˈbɔːrɪŋ/), <em>statue</em> (/ˈstætʃuː/), <em>temple</em> (/ˈtempl/)." },
+                { id: 2, label: "2", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "busy", B: "compose", C: "accept", D: "reply" }, answer: "A", exp: "👉 Tính từ <strong>busy</strong> có trọng âm rơi vào âm tiết thứ 1 (/ˈbɪzi/).<br>👉 Các từ còn lại là động từ có 2 âm tiết, nhấn âm tiết thứ 2: <em>compose</em> (/kəmˈpəʊz/), <em>accept</em> (/ək[']sept/), <em>reply</em> (/rɪˈplaɪ/)." },
+                { id: 3, label: "3", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "cathedral", B: "finally", C: "historic", D: "pagoda" }, answer: "B", exp: "👉 Trạng từ <strong>finally</strong> nhấn âm tiết thứ 1 (/ˈfaɪnəli/).<br>👉 Các từ còn lại có 3 âm tiết, nhấn âm tiết thứ 2: <em>cathedral</em> (/kəˈθiːdrəl/), <em>historic</em> (/hɪˈstɒrɪk/), <em>pagoda</em> (/pəˈɡəʊdə/)." },
+                { id: 4, label: "4", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "contaminate", B: "memorial", C: "independent", D: "responsible" }, answer: "C", exp: "👉 <strong>independent</strong> có trọng âm chính rơi vào âm tiết thứ 3 (/ˌɪndɪˈpendənt/).<br>👉 Các từ còn lại nhấn vào âm tiết thứ 2: <em>contaminate</em> (/kənˈtæmɪneɪt/), <em>memorial</em> (/məˈmɔːriəl/), <em>responsible</em> (/rɪˈspɒnsəbl/)." },
+                { id: 5, label: "5", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "noisy", B: "modern", C: "narrow", D: "pollute" }, answer: "D", exp: "👉 Động từ <strong>pollute</strong> nhấn âm tiết thứ 2 (/pəˈluːt/).<br>👉 Các từ còn lại là tính từ 2 âm tiết, nhấn âm tiết 1: <em>noisy</em> (/ˈnɔɪzi/), <em>modern</em> (/ˈmɒdn/), <em>narrow</em> (/ˈnærəʊ/)." },
+                { id: 6, label: "6", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "second", B: "picture", C: "railway", D: "arrive" }, answer: "D", exp: "👉 Động từ <strong>arrive</strong> nhấn âm tiết thứ 2 (/əˈraɪv/).<br>👉 Các từ còn lại là danh từ/từ chỉ số, nhấn âm tiết 1: <em>second</em> (/ˈsekənd/), <em>picture</em> (/ˈpɪktʃər/), <em>railway</em> (/ˈreɪlweɪ/)." },
+                { id: 7, label: "7", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "station", B: "enjoy", C: "quiet", D: "friendly" }, answer: "B", exp: "👉 Động từ <strong>enjoy</strong> nhấn âm tiết thứ 2 (/ɪnˈdʒɔɪ/).<br>👉 Các từ còn lại nhấn âm tiết 1: <em>station</em> (/ˈsteɪʃn/), <em>quiet</em> (/ˈkwaɪët/), <em>friendly</em> (/ˈfrendli/)." },
+                { id: 8, label: "8", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "busy", B: "friendly", C: "remind", D: "normal" }, answer: "C", exp: "👉 Động từ <strong>remind</strong> có trọng âm rơi vào âm tiết thứ 2 (/rɪˈmaɪnd/).<br>👉 Các từ còn lại nhấn âm tiết 1: <em>busy</em> (/ˈbɪzi/), <em>friendly</em> (/ˈfrendli/), <em>normal</em> (/ˈnɔːml/)." },
+                { id: 9, label: "9", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "traffic", B: "seafood", C: "building", D: "direct" }, answer: "D", exp: "👉 Động từ/Tính từ <strong>direct</strong> nhấn âm tiết thứ 2 (/daɪˈrekt/).<br>👉 Các từ còn lại là danh từ, nhấn âm tiết 1: <em>traffic</em> (/ˈtræfɪk/), <em>seafood</em> (/ˈsiːfuːd/), <em>building</em> (/ˈbɪldɪŋ/)." },
+                { id: 10, label: "10", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "present", B: "along", C: "workshop", D: "suburb" }, answer: "B", exp: "👉 Giới từ <strong>along</strong> nhấn vào âm tiết thứ 2 (/əˈlɒŋ/).<br>👉 Các từ còn lại là danh từ nhấn âm tiết 1: <em>present</em> (/ˈpreznt/), <em>workshop</em> (/ˈwɜːkʃɒp/), <em>suburb</em> (/ˈsʌbɜːb/)." },
+                { id: 11, label: "11", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "historic", B: "direction", C: "museum", D: "gallery" }, answer: "D", exp: "👉 Danh từ <strong>gallery</strong> có trọng âm rơi vào âm tiết thứ 1 (/ˈɡæləri/).<br>👉 Các từ còn lại nhấn âm tiết thứ 2: <em>historic</em> (/hɪˈstɒrɪk/), <em>direction</em> (/dəˈrekʃn/), <em>museum</em> (/mjuːˈziːəm/)." },
+                { id: 12, label: "12", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "statue", B: "palace", C: "arrive", D: "peaceful" }, answer: "C", exp: "👉 Động từ <strong>arrive</strong> nhấn âm tiết thứ 2 (/əˈraɪv/).<br>👉 Các từ còn lại nhấn âm tiết 1: <em>statue</em> (/ˈstætʃuː/), <em>palace</em> (/ˈpæləs/), <em>peaceful</em> (/ˈpiːsfl/)." },
+                { id: 13, label: "13", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "beautiful", B: "difficult", C: "interesting", D: "polluted" }, answer: "D", exp: "👉 Tính từ <strong>polluted</strong> có gốc từ pollute, trọng âm nhấn vào âm tiết thứ 2 (/pəˈluːtɪd/).<br>👉 Các từ còn lại nhấn âm tiết 1: <em>beautiful</em> (/ˈbjuːtɪfl/), <em>difficult</em> (/ˈdɪfɪkəlt/), <em>interesting</em> (/ˈɪntrəstɪŋ/)." },
+                { id: 14, label: "14", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "countryside", B: "pagoda", C: "restaurant", D: "motorbike" }, answer: "B", exp: "👉 <strong>pagoda</strong> có trọng âm rơi vào âm tiết thứ 2 (/pəˈɡəʊdə/).<br>👉 Các từ còn lại nhấn âm tiết 1: <em>countryside</em> (/ˈkʌntrisaɪd/), <em>restaurant</em> (/ˈrestrɒnt/), <em>motorbike</em> (/ˈməʊtəbaɪk/)." },
+                { id: 15, label: "15", text: "Chọn từ có vị trí trọng âm chính khác biệt:", options: { A: "seafood", B: "famous", C: "police", D: "building" }, answer: "C", exp: "👉 Danh từ <strong>police</strong> đặc biệt có trọng âm rơi vào âm tiết thứ 2 (/pəˈliːs/).<br>👉 Các từ còn lại nhấn âm tiết 1: <em>seafood</em> (/ˈsiːfuːd/), <em>famous</em> (/ˈfeɪməs/), <em>building</em> (/ˈbɪldɪŋ/)." }
+            ]
+        };
+
+        let currentActiveSection = 'ex1';
+        let studentAccumulatedScore = 0;
+        let loggedExamProgress = { ex1: {}, ex2: {} };
+
+        function changeSectionTab(sectionKey) {
+            currentActiveSection = sectionKey;
+            
+            const btn1 = document.getElementById('tab-ex1');
+            const btn2 = document.getElementById('tab-ex2');
+            const headerText = document.getElementById('exercise-main-title');
+            const headerIcon = document.getElementById('header-icon');
+
+            if (sectionKey === 'ex1') {
+                btn1.style.background = activeTheme.accent;
+                btn2.style.background = 'transparent';
+                headerText.innerText = "Exercise 1: Mark the letter A, B, C, or D to indicate the word whose underlined part differs from the other three in pronunciation in each of the following questions.";
+                headerIcon.innerText = "🗣️";
+            } else {
+                btn2.style.background = activeTheme.accent;
+                btn1.style.background = 'transparent';
+                headerText.innerText = "Exercise 2: Mark the letter A, B, C, or D to indicate the word that differs from the other three in the position of primary stress in each of the following questions.";
+                headerIcon.innerText = "⚡";
+            }
+
+            renderQuizListFeed();
+        }
+
+        function renderQuizListFeed() {
+            const feedContainer = document.getElementById('quiz-feed-wrapper');
+            feedContainer.innerHTML = '';
+
+            const activeList = exerciseData[currentActiveSection];
+
+            activeList.forEach((questionObj, index) => {
+                const questionContainerCard = document.createElement('div');
+                questionContainerCard.className = "pb-8 border-b-2 border-emerald-100 last:border-none";
+
+                const blockHeader = document.createElement('div');
+                blockHeader.className = "flex items-start gap-3 mb-5";
+                blockHeader.innerHTML = `
+                    <span class="font-poster text-white text-xs font-black px-4 py-1.5 rounded-lg shrink-0 mt-0.5 shadow-md uppercase tracking-wider" style="background: var(--theme-accent)">CÂU ${questionObj.label}</span>
+                    <span class="font-bubble font-semibold text-slate-900 text-base md:text-lg leading-relaxed">${questionObj.text}</span>
+                `;
+                questionContainerCard.appendChild(blockHeader);
+
+                const buttonsGrid = document.createElement('div');
+                buttonsGrid.className = "font-poster grid grid-cols-1 md:grid-cols-2 gap-4 tracking-wider text-sm md:text-base";
+
+                const historicalState = loggedExamProgress[currentActiveSection][index];
+
+                Object.entries(questionObj.options).forEach(([key, value]) => {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.className = "option-card flex items-center justify-between p-4 bg-white border-2 border-slate-300 rounded-xl text-left font-semibold text-slate-950 hover:shadow-lg active:scale-[0.95] cursor-pointer";
+                    
+                    let statusRadioNode = `<span class="w-5 h-5 rounded-full border-2 border-slate-400 bg-white flex items-center justify-center shrink-0"></span>`;
+
+                    if (historicalState) {
+                        optionBtn.disabled = true;
+                        optionBtn.style.transform = 'none';
+                        if (key === questionObj.answer) {
+                            optionBtn.className = "option-card flex items-center justify-between p-4 bg-emerald-600 border-2 border-emerald-700 rounded-xl text-left font-bold text-white shadow-md";
+                            statusRadioNode = `<span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-emerald-600 text-xs font-black shrink-0">✓</span>`;
+                        } else if (historicalState.selected === key) {
+                            optionBtn.className = "option-card flex items-center justify-between p-4 bg-rose-600 border-2 border-rose-700 rounded-xl text-left font-bold text-white shadow-md";
+                            statusRadioNode = `<span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-rose-600 text-xs font-black shrink-0">✕</span>`;
+                        } else {
+                            optionBtn.className = "option-card flex items-center justify-between p-4 bg-slate-100 border border-slate-200 opacity-30 rounded-xl text-left font-medium text-slate-400 shadow-none pointer-events-none";
+                            statusRadioNode = `<span class="w-5 h-5 rounded-full border border-slate-300 bg-slate-200 shrink-0"></span>`;
+                        }
+                    } else {
+                        optionBtn.onclick = (e) => processStudentSelection(index, key, e.clientX, e.clientY);
+                    }
+
+                    optionBtn.innerHTML = `<span><strong class="font-black text-base md:text-lg mr-2" style="color: var(--theme-accent)">${key}.</strong> ${value}</span> ${statusRadioNode}`;
+                    if(historicalState && (key === questionObj.answer || historicalState.selected === key)) {
+                        optionBtn.innerHTML = `<span><strong class="text-white font-black text-base md:text-lg mr-2">${key}.</strong> ${value}</span> ${statusRadioNode}`;
+                    }
+                    buttonsGrid.appendChild(optionBtn);
+                });
+
+                questionContainerCard.appendChild(buttonsGrid);
+
+                if (historicalState) {
+                    const structuralExpBox = document.createElement('div');
+                    structuralExpBox.className = "mt-4 p-4 md:p-5 bg-emerald-50 border-2 border-emerald-200 rounded-xl shadow-md relative overflow-hidden text-slate-950 font-sans";
+                    structuralExpBox.innerHTML = `
+                        <div class="font-poster flex items-center gap-2 font-bold text-emerald-950 uppercase text-xs md:text-sm mb-2 tracking-wider">
+                            <span class="text-base">💡</span> GIẢI THÍCH TỪ CÔ LÊ HẰNG:
+                        </div>
+                        <div class="text-slate-900 text-sm md:text-base leading-relaxed space-y-1 pl-4 border-l-4 border-emerald-500 font-medium font-sans">
+                            ${questionObj.exp}
+                        </div>
+                    `;
+                    questionContainerCard.appendChild(structuralExpBox);
+                }
+
+                feedContainer.appendChild(questionContainerCard);
+            });
+        }
+
+        function processStudentSelection(index, optionChar, clickX, clickY) {
+            if (loggedExamProgress[currentActiveSection][index]) return;
+
+            const referenceQuestion = exerciseData[currentActiveSection][index];
+            const isCorrect = (optionChar === referenceQuestion.answer);
+
+            if (isCorrect) {
+                studentAccumulatedScore += 10;
+                changeMascotReaction('success');
+                triggerConfettiExplosion(clickX || (window.innerWidth / 2), clickY || (window.innerHeight / 2));
+            } else {
+                changeMascotReaction('encourage');
+            }
+
+            loggedExamProgress[currentActiveSection][index] = { selected: optionChar, isCorrect: isCorrect };
+            document.getElementById('footer-live-score').innerText = studentAccumulatedScore;
+            
+            playSoundNotification(isCorrect);
+            renderQuizListFeed();
+        }
+
+        function alertFinishMessage() {
+            playSoundNotification(true);
+            triggerConfettiExplosion(window.innerWidth / 2, window.innerHeight / 2);
+            alert(`🎉 Chúc mừng con yêu đã hoàn thành xong bài tập ngày hôm nay!\n🏆 Tổng số điểm đạt được: ${studentAccumulatedScore} điểm.`);
+        }
+
+        window.onload = () => {
+            renderQuizListFeed();
+        };
+    </script>
+</body>
+</html>
